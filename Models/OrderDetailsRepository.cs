@@ -1,4 +1,5 @@
-﻿using SharedModels.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using SharedModels.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,24 +9,33 @@ namespace BETOnlineShopAPI.Models
 {
     public class OrderDetailsRepository : IOrderDetailsRepository
     {
+        private readonly ApplicationDbContext _db;
+        public OrderDetailsRepository(ApplicationDbContext db)
+        {
+            _db = db;  
+        }
         public Task<OrderDetails> AddOrderDetails(OrderDetails orderDetails)
         {
             throw new NotImplementedException();
         }
 
-        public Task DeleteOrderDetails(int Id)
+        public async Task DeleteOrderDetails(int Id)
         {
-            throw new NotImplementedException();
+            OrderDetails orderDetail= await _db.OrderDetails.Include(p => p.Product).Include(o => o.Order).FirstOrDefaultAsync(r => r.Id == Id);
+            if (orderDetail != null)
+            {
+               _db.OrderDetails.Remove(orderDetail);
+            }
         }
 
-        public Task<IEnumerable<OrderDetails>> GetAllOrderDetails()
+        public async Task<IEnumerable<OrderDetails>> GetAllOrderDetails()
         {
-            throw new NotImplementedException();
+            return await _db.OrderDetails.Include(p => p.Product).Include(o => o.Order).ToListAsync();
         }
 
-        public Task<OrderDetails> GetOrderDetailsById(int Id)
+        public async Task<IEnumerable<OrderDetails>> GetOrderDetailsByOrderId(int Id)
         {
-            throw new NotImplementedException();
+            return await _db.OrderDetails.Include(p => p.Product).Include(o => o.Order).Where(r=>r.OrderId==Id).ToListAsync();
         }
 
         public Task<OrderDetails> UpDateOrderDetails(Order orderDetails)

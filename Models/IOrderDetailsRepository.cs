@@ -9,7 +9,7 @@ namespace BETOnlineShopAPI.Models
     public interface IOrderDetailsRepository
     {
         Task<IEnumerable<OrderDetails>> GetAllOrderDetails();
-        Task<OrderDetails> GetOrderDetailsById(int Id);
+        Task<IEnumerable<OrderDetails>> GetOrderDetailsByOrderId(int Id);
         Task<OrderDetails> AddOrderDetails(OrderDetails orderDetails);
         Task<OrderDetails> UpDateOrderDetails(Order orderDetails);
         Task DeleteOrderDetails(int Id);

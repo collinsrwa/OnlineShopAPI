@@ -16,32 +16,39 @@ namespace BETOnlineShopAPI.Models
         }
         public async Task AddOrder(Order order)
         {
-            //if (order.orderDetails != null)
-            //{
-            //    _db.Entry(order.orderDetails).State = EntityState.Unchanged;
-            //}
             _db.Orders.Add(order);
             await _db.SaveChangesAsync();
         }
 
-        public Task DeleteOrder(int Id)
+        public async Task DeleteOrder(int Id)
         {
-            throw new NotImplementedException();
+            Order order = await _db.Orders.Include(o => o.orderDetails).FirstOrDefaultAsync(x => x.Id == Id);
+            _db.Orders.Remove(order);
         }
 
-        public Task<IEnumerable<Order>> GetAllOrders()
+        public async Task<IEnumerable<Order>> GetAllOrders()
         {
-            throw new NotImplementedException();
+            return await _db.Orders.ToListAsync();
         }
 
-        public Task<Order> GetOrderId(int Id)
+        public async Task<Order> GetOrderId(int Id)
         {
-            throw new NotImplementedException();
+            return await _db.Orders.FirstOrDefaultAsync(o=>o.Id==Id);
         }
 
-        public Task<Order> UpDateOrder(Order order)
+        public async Task<Order> UpDateOrder(Order order)
         {
-            throw new NotImplementedException();
+            Order orderToUpdate = await _db.Orders.FirstOrDefaultAsync(o => o.Id == order.Id);
+            if (orderToUpdate != null)
+            {
+                orderToUpdate.Name = order.Name;
+                orderToUpdate.MobileNumber = order.MobileNumber;
+                orderToUpdate.Address = order.Address;
+                orderToUpdate.IsProcessed = order.IsProcessed;
+                _db.Orders.Update(orderToUpdate);
+                await _db.SaveChangesAsync();
+            }
+            return orderToUpdate;
         }
         public string GetOrderNumber()
         {
